@@ -1,3 +1,5 @@
+//FAUTE : oublie du include
+#include "List.h"
 
 namespace pr {
 
@@ -9,15 +11,17 @@ size_t Chainon::length() {
 	if (next != nullptr) {
 		len += next->length();
 	}
-	return length();
+	//FAUTE : Mauvais return recursion infini sinon
+	return len;
 }
-
-void Chainon::print (std::ostream & os) {
+//FAUTE : oublie const
+void Chainon::print (std::ostream & os) const{
 	os << data ;
 	if (next != nullptr) {
 		os << ", ";
+		next->print(os);
 	}
-	next->print(os);
+	//next->print(os);
 }
 
 // ******************  List
@@ -41,11 +45,15 @@ void List::push_back (const std::string& val) {
 	}
 }
 
+//FAUTE : Deja defini dans List.h
+/*
 void List::push_front (const std::string& val) {
 	tete = new Chainon(val,tete);
 }
+*/
 
-bool empty() {
+//FAUTE : empty est une methode de la classe List
+bool List::empty() {
 	return tete == nullptr;
 }
 
@@ -57,10 +65,9 @@ size_t List::size() const {
 	}
 }
 
-} // namespace pr
+//FAUTE : La methode operator << doit etre inclut de le namespace pr
 
-std::ostream & operator<< (std::ostream & os, const pr::List & vec)
-{
+std::ostream & operator<< (std::ostream & os, const pr::List & vec){
 	os << "[";
 	if (vec.tete != nullptr) {
 		vec.tete->print (os) ;
@@ -69,3 +76,4 @@ std::ostream & operator<< (std::ostream & os, const pr::List & vec)
 	return os;
 }
 
+} // namespace pr
