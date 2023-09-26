@@ -12,7 +12,8 @@ int main () {
 	str[1] = 'b';
 	str[2] = 'c';
 	str[3]= '\0';
-	size_t i = 0;
+	// FAUTE i ne sera jamais negatif en size_t
+	int i = 0;
 
 	if (! strcmp (str, abc.c_str())) {
 		std::cout << "Equal !";
