@@ -5,6 +5,28 @@
 #include <vector>
 #include "HashMap.hh"
 
+template<typename iterator>
+size_t count (iterator begin, iterator end){
+	size_t size=0;
+	while(begin!=end){
+		++begin;
+		size++;
+	}
+	return size;
+}
+
+template<typename iterator,typename T>
+size_t count_if_equal (iterator begin, iterator end, const T & val){
+	size_t size=0;
+		while(begin!=end){
+			if (*begin==val){
+				size++;
+			}
+			++begin;
+		}
+		return size;
+}
+
 int main () {
 	using namespace std;
 	using namespace std::chrono;
