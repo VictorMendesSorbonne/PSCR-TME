@@ -25,5 +25,7 @@ Compte::Compte(const Compte & other) {
 	solde = other.solde;
 	other.m.unlock();
 }
-
+mutex & Compte::getMutex(){
+	return m;
+}
 }
