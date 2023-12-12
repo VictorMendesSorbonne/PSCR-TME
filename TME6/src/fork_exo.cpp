@@ -2,20 +2,8 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <csignal>
 
-int PV =4;
 
-void attaque(pid_t adversaire){
-	signal(SIGINT,[](int sig){
-		PV--;
-		std::cout <<"Points de Vie restants = "<<PV <<std::endl;
-		if (PV ==0){
-			std::cout <<"Le processus se termine"<<PV <<std::endl;
-			return 1;
-		}
-	});
-}
 int main () {
 	const int N = 3;
 

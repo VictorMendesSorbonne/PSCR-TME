@@ -35,7 +35,7 @@ public:
     }
 
     void stop(){
-        queue.setisBlocking(false);
+        queue.setBlocking(false);
         
         for(auto & t : threads){
             t.join();

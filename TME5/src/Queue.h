@@ -1,9 +1,10 @@
-#ifndef SRC_QUEUE_H_
-#define SRC_QUEUE_H_
+#pragma once
 
 #include <cstdlib>
 #include <mutex>
 #include <condition_variable>
+#include <cstring>
+
 namespace pr {
 
 // MT safe version of the Queue, non blocking.
@@ -82,4 +83,3 @@ public:
 
 }
 
-#endif /* SRC_QUEUE_H_ */
