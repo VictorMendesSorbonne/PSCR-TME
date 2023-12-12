@@ -8,7 +8,7 @@
 #include <limits>
 #include <random>
 
-#define NBTHREAD 8
+#define NBTHREAD 4
 using namespace std;
 using namespace pr;
 
@@ -104,42 +104,40 @@ void exportImage(const char * path, size_t width, size_t height, Color * pixels)
 class DrawJob : public Job {
     const Scene::screen_t & screen;
     int x;
+    int y;
     const Scene &scene;
     vector<Vec3D> & lights;
     Color * pixels;
     Barrier &b;
 public :
-    DrawJob(const Scene::screen_t & screen, int x, const Scene & scene,vector<Vec3D> & lights,Color * pixels,Barrier &b) : screen(screen), x(x), scene(scene), lights(lights), pixels(pixels),b(b){}
+    DrawJob(const Scene::screen_t & screen, int x,int y, const Scene & scene,vector<Vec3D> & lights,Barrier &b) : screen(screen), x(x),y(y), scene(scene), lights(lights),b(b){}
     void run () {
-        for (int  y = 0 ; y < scene.getHeight() ; y++){
-		    // le point de l'ecran par lequel passe ce rayon
-			auto & screenPoint = screen[y][x];
-			// le rayon a inspecter
-			Rayon  ray(scene.getCameraPos(), screenPoint);
-			
-			int targetSphere = findClosestInter(scene, ray);
-            if(y == 999){
-                //cout<<"[y] "<<y<<" [x] "<<x<<endl;
-            }
-			
-			if (targetSphere == -1) {
-				// keep background color
-                continue;
-			} else {
-				const Sphere & obj = *(scene.begin() + targetSphere);
-				// pixel prend la couleur de l'objet
-				Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
-				
-				// le point de l'image (pixel) dont on vient de calculer la couleur
-				Color & pixel = pixels[y*scene.getHeight() + x];
-				// mettre a jour la couleur du pixel dans l'image finale.
-				pixel = finalcolor;
-                
-            }
-            
+        // le point de l'ecran par lequel passe ce rayon
+        auto & screenPoint = screen[y][x];
+        // le rayon a inspecter
+        Rayon  ray(scene.getCameraPos(), screenPoint);
+
+        int targetSphere = findClosestInter(scene, ray);
+        if(y == 999){
+            //cout<<"[y] "<<y<<" [x] "<<x<<endl;
         }
-		b.done();
-        
+
+        if (targetSphere == -1) {
+            // keep background color
+            return;
+        } else {
+            const Sphere & obj = *(scene.begin() + targetSphere);
+            // pixel prend la couleur de l'objet
+            Color finalcolor = computeColor(obj, ray, scene.getCameraPos(), lights);
+
+            // le point de l'image (pixel) dont on vient de calculer la couleur
+            Color & pixel = pixels[y*scene.getHeight() + x];
+            // mettre a jour la couleur du pixel dans l'image finale.
+            pixel = finalcolor;
+
+        }
+    b.done();
+
     }
     ~DrawJob(){}
 };
@@ -177,8 +175,10 @@ int main () {
     pool.start(NBTHREAD);
 	// pour chaque pixel, calculer sa couleur
 	for (int x =0 ; x < scene.getWidth() ; x++) {
-       pool.submit(new DrawJob(ref(screen),x,ref(scene),ref(lights),pixels,ref(b)));  //44 ms  for 1 job = 1 column
-	}
+        for (int  y = 0 ; y < scene.getHeight() ; y++) {
+            pool.submit(new DrawJob(ref(screen), x,y, ref(scene), ref(lights), ref(b)));
+        }
+    }
    
     b.wait_for();
     pool.stop();

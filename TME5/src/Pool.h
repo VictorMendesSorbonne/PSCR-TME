@@ -20,7 +20,7 @@ public:
             delete j;
         }
     }
-        
+
     void start (int nbthread){
         threads.reserve(nbthread);
         for(int i = 0;i<nbthread;++i){
@@ -30,16 +30,16 @@ public:
     }
 
     void submit(Job * job){
-        
+
         queue.push(job);
     }
 
     void stop(){
         queue.setBlocking(false);
-        
+
         for(auto & t : threads){
             t.join();
-            
+
         }
         threads.clear();
     }
@@ -56,7 +56,7 @@ class Barrier{
     int N;
     std::condition_variable cv;
 
-    public : 
+    public :
     Barrier(int N): N(N){
         cpt = 0;
     }
@@ -67,7 +67,7 @@ class Barrier{
         if(N>=cpt){
             cv.notify_one();
         }
-        
+
     }
 
     void wait_for(){
